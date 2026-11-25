@@ -5,6 +5,8 @@ const ContributionsHandler = require("./contributions");
 const AllocationsHandler = require("./allocations");
 const MemosHandler = require("./memos");
 const ResearchHandler = require("./research");
+const SqlLabHandler = require("./sql-lab");
+const FileLabHandler = require("./file-lab");
 const tutorialRouter = require("./tutorial");
 const ErrorHandler = require("./error").errorHandler;
 
@@ -19,6 +21,26 @@ const index = (app, db) => {
     const allocationsHandler = new AllocationsHandler(db);
     const memosHandler = new MemosHandler(db);
     const researchHandler = new ResearchHandler(db);
+    const sqlLab = new SqlLabHandler();
+    const fileLab = new FileLabHandler();
+
+    // SQL injection and path traversal test cases
+    app.get("/lab/sql/user", sqlLab.userByName);
+    app.get("/lab/sql/search/:term", sqlLab.search);
+    app.post("/lab/sql/sorted", sqlLab.sorted);
+    app.get("/lab/sql/remove", sqlLab.remove);
+    app.post("/lab/sql/sorted-safe", sqlLab.sortedSafe);
+    app.get("/lab/sql/user/:id", sqlLab.userById);
+    app.get("/lab/sql/search-safe", sqlLab.searchSafe);
+    app.get("/lab/sql/top", sqlLab.top);
+    app.get("/lab/files/read", fileLab.read);
+    app.get("/lab/files/stream/:target", fileLab.stream);
+    app.post("/lab/files/save", fileLab.save);
+    app.get("/lab/files/weak", fileLab.weak);
+    app.get("/lab/files/read-safe", fileLab.readSafe);
+    app.get("/lab/files/doc", fileLab.doc);
+    app.get("/lab/files/plain", fileLab.plain);
+    app.get("/lab/files/page", fileLab.page);
 
     // Middleware to check if a user is logged in
     const isLoggedIn = sessionHandler.isLoggedInMiddleware;
